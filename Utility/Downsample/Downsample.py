@@ -9,7 +9,6 @@ Created on Fri Nov 23 21:11:47 2018
 # Import required libraries
 
 import scipy.io.wavfile
-import csv
 
 # Load data
 
@@ -25,7 +24,7 @@ length_in_minutes = length_in_seconds/60
 print("The audiofile length in seconds: ", length_in_seconds)
 print("The audiofile length in minutes: ", length_in_minutes)
 
-# Extract last 1 minute / last 5 minutes.
+# Extract last 1 / 3 / 5 / 10 minutes.
 # Logic: Sample rate tells us number of measurements in 1 second, multiply by 60
 
 
@@ -59,15 +58,3 @@ file_downsampled_32 = file[1][::32]
 
 
 # Extract to csv
-
-with open("lastminute.csv","w+") as my_csv:
-    csvWriter = csv.writer(my_csv,delimiter=',')
-    csvWriter.writerows(last_1min)
-    
-
-with open('lastminute.csv', 'wb') as csvfile:
-    spamwriter = csv.writer(csvfile, delimiter=' ',
-                            quotechar='|', quoting=csv.QUOTE_MINIMAL)
-    spamwriter.writerow(last_1min)
-    
-    
