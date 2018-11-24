@@ -1,5 +1,6 @@
 import openpyxl
 import csv
+from datetime import timedelta
 
 wb = openpyxl.load_workbook('IHearVoicesData.xlsx', data_only=True)
 
@@ -16,8 +17,10 @@ for row in range(3, 57):
         data.append({'status': status})
         continue
 
-    start = int(ws.cell(row=row, column=6).value.timestamp())
-    end = int(ws.cell(row=row, column=7).value.timestamp())
+    time_delta = timedelta(hours=3)
+
+    start = int((ws.cell(row=row, column=6).value + time_delta).timestamp())
+    end = int((ws.cell(row=row, column=7).value + time_delta).timestamp())
 
     data.append({'status': status,
                  'start': start,
