@@ -6,6 +6,8 @@
 /IHearVoicesData/Audio
 /IHearVoicesData/Motion
 /IHearVoicesData
-/Utility/JsonParser/JsonParser/.vs/JsonParser/v15
-/Utility/JsonParser/JsonParser/JsonParser/obj/Debug
+/Utility/JsonParser/JsonParser/.vs
+/Utility/JsonParser/JsonParser/JsonParser/obj
 *.DS_Store
+/Utility/JsonParser/JsonParser/JsonParser/bin
+/Utility/JsonParser/JsonParser/packages
