@@ -14,9 +14,9 @@ namespace JsonParser.MotionData_Reduced
             this.data = motionData.data.Select(d =>
                 new Data
                 {
-                    content = d.@event.content.Take(3).ToArray(),
-                    variable = d.@event.variable.Substring(6,4),
-                    timestamp = d.timestamp,                    
+                    content = d.@event.content.Take(d.@event.content.Length - 1).ToArray(),
+                    variable = string.Join("-", d.@event.variable.Substring(6, 4), d.@event.variable.Substring(11)),
+                    timestamp = d.timestamp,
                 }
             ).ToArray();
         }

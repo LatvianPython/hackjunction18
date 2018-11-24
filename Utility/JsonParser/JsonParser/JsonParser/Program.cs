@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,17 +11,65 @@ namespace JsonParser
     {
         private const string PathToWav = @"C:\hackjunction18\IHearVoicesData\Audio";
         private const string PathToJson = @"C:\hackjunction18\IHearVoicesData\Motion";
+        private const string PathToCsvSALT = @"C:\hackjunction18\IHearVoicesData\Motion\CSV\dataSALT.csv";
+        private const string PathToCsvPEPA = @"C:\hackjunction18\IHearVoicesData\Motion\CSV\dataPEPA.csv";
 
         static void Main(string[] args)
         {
-            var timeFrom = new DateTimeOffset(new DateTime(2018, 10, 12, 14, 35, 0,DateTimeKind.Utc));
+            //LookUpDataFiles();
+
+            //20181025_1100.json -- sensor blew up
+
+            var timeFrom = new DateTimeOffset(new DateTime(2018, 10, 22, 00, 00, 00, DateTimeKind.Utc));
+            var timeTo = new DateTimeOffset(new DateTime(2020, 10, 21, 23, 59, 0, DateTimeKind.Utc));
+
+            var jsonList = GetJsonList(timeFrom, timeTo);
+
+            var allDataLinesSALT = new StringBuilder();
+            var allDataLinesPEPA = new StringBuilder();
+
+            foreach (var json in jsonList)
+            {
+                var reduced = ParseMotionData(json);
+
+                foreach (var point in reduced.data)
+                {
+                    var line = string.Join("😈", point.content.Select(_ => _.ToString()));
+                    line = string.Join("😈", point.timestamp.ToString(), line);
+                    switch (point.variable)
+                    {
+                        case "SALT-quaternion":
+                        case "SALT-acceleration":
+                            allDataLinesSALT.AppendLine(line);
+                            break;
+                        case "PEPA-quaternion":
+                        case "PEPA-acceleration":
+                            allDataLinesPEPA.AppendLine(line);
+                            break;
+                    }
+                }
+
+                var index = jsonList.IndexOf(json) + 1;
+                Console.WriteLine($"{index} of {jsonList.Count}    ({(((float)index)*100/(float)jsonList.Count).ToString("0.00")}%)");
+
+                File.AppendAllText(PathToCsvSALT, allDataLinesSALT.ToString());
+                File.AppendAllText(PathToCsvPEPA, allDataLinesPEPA.ToString());
+
+                allDataLinesPEPA.Clear();
+                allDataLinesSALT.Clear();
+            }
+        }
+
+        private static void LookUpDataFiles()
+        {
+            var timeFrom = new DateTimeOffset(new DateTime(2018, 10, 12, 14, 35, 0, DateTimeKind.Utc));
             var timeTo = new DateTimeOffset(new DateTime(2018, 10, 15, 20, 35, 0, DateTimeKind.Utc));
 
             var wavList = GetWavList(timeFrom, timeTo);
             var jsonList = GetJsonList(timeFrom, timeTo);
         }
 
-        private static object GetJsonList(DateTimeOffset timeFrom, DateTimeOffset timeTo)
+        private static List<string> GetJsonList(DateTimeOffset timeFrom, DateTimeOffset timeTo)
         {
             var listOfJsonOrig = System.IO.Directory.EnumerateFiles(PathToJson).ToList();
             var listOfJson = listOfJsonOrig.Select(j => JsonFileNameToDateTimeString(j)).ToList();
@@ -41,7 +90,7 @@ namespace JsonParser
 
         private static string GetJsonByEpoch(IEnumerable<long> listOfJsonEpoch, long v)
         {
-            var closestNeighbour = listOfJsonEpoch.Where(e => e - v < 0).Reverse().First();
+            var closestNeighbour = (listOfJsonEpoch.Where(e => e - v <= 0).Reverse()).Count()<1 ? listOfJsonEpoch.First() : (listOfJsonEpoch.Where(e => e - v <= 0).Reverse()).First();
 
             var distance = closestNeighbour - v;
 
@@ -111,7 +160,7 @@ namespace JsonParser
 
         private static string GetWavByEpoch(IEnumerable<long> listOfWaveEpoch, long motionPoint)
         {
-            var closestNeighbour = listOfWaveEpoch.Where(e => e - motionPoint < 0).Reverse().First();
+            var closestNeighbour = listOfWaveEpoch.Where(e => e - motionPoint <= 0).Reverse().First();
 
             var distance = closestNeighbour - motionPoint;
 
