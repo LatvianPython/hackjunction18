@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace JsonParser
 {
@@ -11,22 +12,60 @@ namespace JsonParser
     {
         private const string PathToWav = @"C:\hackjunction18\IHearVoicesData\Audio";
         private const string PathToJson = @"C:\hackjunction18\IHearVoicesData\Motion";
-        private const string PathToCsvSALT = @"C:\hackjunction18\IHearVoicesData\Motion\CSV\dataSALT.csv";
-        private const string PathToCsvPEPA = @"C:\hackjunction18\IHearVoicesData\Motion\CSV\dataPEPA.csv";
+        private const string PathToCsvSALT = @"C:\hackjunction18\IHearVoicesData\Motion\CSV\dataSALT-new.csv";
+        private const string PathToCsvPEPA = @"C:\hackjunction18\IHearVoicesData\Motion\CSV\dataPEPA-new.csv";
+
+
+        private readonly static List<(string Status, long start, long finish)> STATUSES = new List<(string Status, long start, long finish)>
+        {
+("Stopped",1539349200,1539360000),
+("Good",1539360000,1539440100),
+("Stopped",1539440100,1539500400),
+("Good",1539500400,1539531900),
+("Stopped",1539531900,1539545400),
+("Good",1539545400,1539581400),
+("Stopped",1539581400,1539592200),
+("Good",1539592200,1539599400),
+("Good",1540044000,1540051200),
+("Stopped",1540051200,1540056600),
+("Good",1540056600,1540076400),
+("Stopped",1540076400,1540079100),
+("Good",1540079100,1540145700),
+("Failure",1540145700,1540157400),
+("Good",1540157400,1540168200),
+("Failure",1540168200,1540170000),
+("Good",1540170000,1540200600),
+("Failure",1540200600,1540218000),
+("Good",1540218000,1540267200),
+("Stopped",1540267200,1540270800),
+("Good",1540270800,1540285200),
+("Failure",1540285200,1540287000),
+("Good",1540287000,1540389600),
+("Stopped",1540389600,1540391400),
+("Good",1540391400,1540447200),
+("Stopped",1540447200,1540485000),
+("Failure",1540485000,1540533600),
+("Good",1540533600,1540549800),
+("Failure",1540549800,1540555200)
+        };
 
         static void Main(string[] args)
         {
             //LookUpDataFiles();
 
             //20181025_1100.json -- sensor blew up
+            //20181026_1400.json
 
-            var timeFrom = new DateTimeOffset(new DateTime(2018, 10, 22, 00, 00, 00, DateTimeKind.Utc));
-            var timeTo = new DateTimeOffset(new DateTime(2020, 10, 21, 23, 59, 0, DateTimeKind.Utc));
+            var timeFrom = new DateTimeOffset(new DateTime(2010, 10, 26, 10, 00, 00, DateTimeKind.Utc));
+            var timeTo = new DateTimeOffset(new DateTime(2020, 10, 26, 10, 59, 0, DateTimeKind.Utc));
 
             var jsonList = GetJsonList(timeFrom, timeTo);
 
             var allDataLinesSALT = new StringBuilder();
             var allDataLinesPEPA = new StringBuilder();
+
+            var sw = new Stopwatch();
+            sw.Start();
 
             foreach (var json in jsonList)
             {
@@ -34,15 +73,20 @@ namespace JsonParser
 
                 foreach (var point in reduced.data)
                 {
-                    var line = string.Join("😈", point.content.Select(_ => _.ToString()));
-                    line = string.Join("😈", point.timestamp.ToString(), line);
+                    var status = STATUSES.FirstOrDefault(x => point.timestamp >= x.start*1000 && point.timestamp <= x.finish*1000).Status ?? "TRESH";
+                    var line = string.Join(",", point.content.Select(_ => _.ToString()));
+                    line = string.Join(",", "USER", status, point.timestamp.ToString(), line);
+                                       
+
                     switch (point.variable)
                     {
                         case "SALT-quaternion":
+                            break;
                         case "SALT-acceleration":
                             allDataLinesSALT.AppendLine(line);
                             break;
                         case "PEPA-quaternion":
+                            break;
                         case "PEPA-acceleration":
                             allDataLinesPEPA.AppendLine(line);
                             break;
@@ -50,7 +94,9 @@ namespace JsonParser
                 }
 
                 var index = jsonList.IndexOf(json) + 1;
-                Console.WriteLine($"{index} of {jsonList.Count}    ({(((float)index)*100/(float)jsonList.Count).ToString("0.00")}%)");
+                float percent = (((float)index) * 100 / (float)jsonList.Count);
+                Console.WriteLine($"{index} of {jsonList.Count}    ({percent.ToString("0.00")}%)" +
+                    $"    Elapsed: {sw.Elapsed}      ETA: {new TimeSpan((long)(sw.ElapsedTicks / percent)-sw.ElapsedTicks)}");
 
                 File.AppendAllText(PathToCsvSALT, allDataLinesSALT.ToString());
                 File.AppendAllText(PathToCsvPEPA, allDataLinesPEPA.ToString());
