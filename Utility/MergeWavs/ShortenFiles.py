@@ -81,3 +81,6 @@ shortened_b5 = fileToShorten_b5[1][0:len(fileToShorten_b5[1])-b5_end]
 
 scipy.io.wavfile.write("/Users/schwerbelastung/Desktop/Incidents/Trimmed/Incident_5_start_201810251530_stopped/a5_short.wav",44100,shortened_a5)
 scipy.io.wavfile.write("/Users/schwerbelastung/Desktop/Incidents/Trimmed/Incident_5_start_201810251530_stopped/b5_short.wav",44100,shortened_b5)
+
+#####################################
+

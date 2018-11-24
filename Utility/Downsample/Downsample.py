@@ -61,6 +61,8 @@ def downsample(pathToWav,targetType,downsamplingRate,minutes):
     	numpy.savetxt(pathToWav[:-4]+'_ds'+str(downsample_rate)+'_'+str(mins_to_isolate)+'lastmins.csv', downsampled_file, delimiter=",")
     elif (args.TargetType == 'npy'):
     	numpy.save(pathToWav[:-4]+'_ds'+str(downsample_rate)+'_'+str(mins_to_isolate)+'lastmins.npy', downsampled_file)
+    elif (args.TargetType == 'wav'):
+        scipy.io.wavfile.write(pathToWav[:-4]+'_ds'+str(downsample_rate)+'_'+str(mins_to_isolate)+'lastmins.wav',int(samplingRate/downsample_rate),downsampled_file)
     else:
     	parser.print_help()
 
@@ -75,3 +77,7 @@ for filepath in glob.iglob(args.PathToFolder +'*.wav'):
 
 for i in range(len(files)):
     downsample(files[i], args.TargetType, args.DownsamplingRate, args.Minutes)
+    
+####
+    
+
