@@ -4,10 +4,13 @@
 
 /.vs
 /IHearVoicesData/Audio
-/IHearVoicesData/Motion
-/IHearVoicesData
 /Utility/JsonParser/JsonParser/.vs
 /Utility/JsonParser/JsonParser/JsonParser/obj
 *.DS_Store
 /Utility/JsonParser/JsonParser/JsonParser/bin
 /Utility/JsonParser/JsonParser/packages
+*.json
+/IHearVoicesData/Motion/CSV/.ipynb_checkpoints
+*.csv
+*.docx
+*.xlsx
