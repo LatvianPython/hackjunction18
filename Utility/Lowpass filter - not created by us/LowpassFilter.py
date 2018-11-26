@@ -14,11 +14,11 @@ import math
 import contextlib
 import os
 
-os.chdir("/Users/schwerbelastung/Desktop/Incidents/wat/Filtered_3min/")
+os.chdir("/Users/schwerbelastung/Desktop/junctiontest/Demo6/")
 
 cutOffFrequency = 1000.0
 
-fname = 'Incident_3_start_201810220830_ds1_3lastmins.wav'
+fname = 'source.wav'
 outname = 'filteredlowpass'+str(cutOffFrequency)+'.wav'
 
 

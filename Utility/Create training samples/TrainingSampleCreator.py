@@ -53,4 +53,4 @@ for i in range(len(startingTimePoints)):
     startingPoint = startingTimePoints[i]*samplingRate
     endPoint = startingPoint + int(args.TargetLength)*samplingRate
     trainingSample = sourceFile[1][startingPoint:endPoint]
-    destinationFile = scipy.io.wavfile.write("TrainingSample_" + str(i + 1), samplingRate, trainingSample )
+    destinationFile = scipy.io.wavfile.write("TrainingSample_" + str(i + 1) + ".wav", samplingRate, trainingSample )
